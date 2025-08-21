@@ -1,7 +1,12 @@
 package services
 
 import (
+	"context"
 	"log"
+	"os"
+	"time"
+
+	"github.com/chromedp/chromedp"
 )
 
 // TODO: Learn how to implement the business logic of writing a parser
@@ -9,6 +14,7 @@ import (
 // The reason we have a WebParser interface is because we can swap the constructor to return mock web parser if we require it for testing
 type WebParser interface {
 	Parse(r *string) (string, error)
+	GetHTML(url string) (string, error)
 }
 
 // This is the actual web parser
@@ -24,3 +30,37 @@ func (p *webParser) Parse(r *string) (string, error) {
 
 	return *r + " processed", nil
 }
+
+func (p *webParser) GetHTML(url string) (string, error) {
+	log.Println("CreateHeadlessChromeInstance function called")
+
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
+
+	var html string
+	var res []byte
+
+	err := chromedp.Run(
+		ctx,
+		chromedp.Navigate(url),
+		chromedp.WaitReady("body"),
+		chromedp.Sleep(1*time.Second),
+		chromedp.CaptureScreenshot(&res),
+		chromedp.OuterHTML("html", &html),
+	)
+
+	if err != nil {
+		log.Printf("Could not navigate to the url. Error: %s", err)
+		return "Could not load the html", err
+	}
+
+	// Store the screenshot
+	err = os.WriteFile("screenshots/Screenshot.png", res, 0o644)
+	if err != nil {
+		log.Printf("Could not write the screenshot")
+		return "", err
+	}
+
+	return html, nil
+}
+

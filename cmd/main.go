@@ -18,6 +18,8 @@ func main() {
 	parseHandlers := handlers.NewParseHandler(parseServices)
 
 	r.Get("/parse", parseHandlers.Parse)
+	r.Get("/show-generated", parseHandlers.ShowPage)
+	r.Post("/html", parseHandlers.GetHTML)
 
 	fmt.Println("Starting server on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
