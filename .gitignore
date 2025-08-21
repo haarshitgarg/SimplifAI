@@ -49,3 +49,6 @@ CLAUDE.md
 
 # Compiled executables
 SimplifAI
+
+# Ignore the images and screenshots
+screenshots/**
