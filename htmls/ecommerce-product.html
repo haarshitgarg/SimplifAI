@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Wireless Headphones - TechStore</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .header { background: #333; color: white; padding: 1rem; }
+        .nav { background: #f4f4f4; padding: 0.5rem; }
+        .nav a { margin-right: 1rem; text-decoration: none; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .product-image { text-align: center; }
+        .product-image img { max-width: 100%; height: auto; }
+        .product-info h1 { color: #333; }
+        .price { font-size: 2rem; color: #e44d26; font-weight: bold; }
+        .btn { background: #007bff; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; }
+        .reviews { margin-top: 2rem; }
+        .review { border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 4px; }
+        .related { margin-top: 2rem; }
+        .related-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .related-item { text-align: center; border: 1px solid #eee; padding: 1rem; border-radius: 4px; }
+        .footer { background: #333; color: white; text-align: center; padding: 1rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>TechStore</h1>
+        <p>Your One-Stop Tech Shop</p>
+    </header>
+    
+    <nav class="nav">
+        <a href="#home">Home</a>
+        <a href="#products">Products</a>
+        <a href="#categories">Categories</a>
+        <a href="#deals">Deals</a>
+        <a href="#support">Support</a>
+        <a href="#cart">Cart (3)</a>
+        <a href="#account">My Account</a>
+    </nav>
+
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <a href="#home">Home</a> > 
+            <a href="#electronics">Electronics</a> > 
+            <a href="#audio">Audio</a> > 
+            <span>Premium Wireless Headphones</span>
+        </nav>
+
+        <div class="product-grid">
+            <div class="product-image">
+                <img src="https://via.placeholder.com/400x400/007bff/ffffff?text=Headphones" alt="Premium Wireless Headphones">
+                <div style="margin-top: 1rem;">
+                    <button class="btn">View All Images</button>
+                    <button class="btn">Watch Video</button>
+                </div>
+            </div>
+            
+            <div class="product-info">
+                <h1>Premium Wireless Headphones Pro X1</h1>
+                <p><strong>Brand:</strong> AudioTech</p>
+                <p><strong>Model:</strong> WH-1000XM4</p>
+                <p><strong>Availability:</strong> <span style="color: green;">In Stock</span></p>
+                
+                <div class="price">$299.99</div>
+                <p><small><del>$399.99</del> <span style="color: green;">25% OFF</span></small></p>
+                
+                <div style="margin: 1rem 0;">
+                    <label for="quantity">Quantity:</label>
+                    <select id="quantity" style="margin-left: 0.5rem; padding: 0.25rem;">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                
+                <button class="btn" style="background: #28a745; margin-right: 1rem;">Add to Cart</button>
+                <button class="btn" style="background: #dc3545;">Buy Now</button>
+                
+                <div style="margin-top: 1rem;">
+                    <button class="btn" style="background: #6c757d;">Add to Wishlist</button>
+                    <button class="btn" style="background: #6c757d;">Share</button>
+                </div>
+                
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+                    <h3>Key Features:</h3>
+                    <ul>
+                        <li>Active Noise Cancellation</li>
+                        <li>30-hour battery life</li>
+                        <li>Bluetooth 5.0</li>
+                        <li>Touch controls</li>
+                        <li>Premium build quality</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="reviews">
+            <h2>Customer Reviews</h2>
+            <div style="margin-bottom: 1rem;">
+                <span style="font-size: 1.5rem;">★★★★★</span>
+                <span>4.8 out of 5 (1,247 reviews)</span>
+            </div>
+            
+            <div class="review">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <strong>John D.</strong>
+                    <span>★★★★★</span>
+                </div>
+                <p>Excellent sound quality and the noise cancellation is incredible. Worth every penny!</p>
+                <small>Verified Purchase • 2 days ago</small>
+            </div>
+            
+            <div class="review">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <strong>Sarah M.</strong>
+                    <span>★★★★☆</span>
+                </div>
+                <p>Great headphones, but the price is a bit high. Sound quality is amazing though.</p>
+                <small>Verified Purchase • 1 week ago</small>
+            </div>
+            
+            <button class="btn">Write a Review</button>
+        </div>
+
+        <div class="related">
+            <h2>Related Products</h2>
+            <div class="related-grid">
+                <div class="related-item">
+                    <img src="https://via.placeholder.com/150x150/6c757d/ffffff?text=Speaker" alt="Bluetooth Speaker">
+                    <h4>Portable Bluetooth Speaker</h4>
+                    <p>$89.99</p>
+                    <button class="btn">Add to Cart</button>
+                </div>
+                <div class="related-item">
+                    <img src="https://via.placeholder.com/150x150/6c757d/ffffff?text=Earbuds" alt="Wireless Earbuds">
+                    <h4>True Wireless Earbuds</h4>
+                    <p>$149.99</p>
+                    <button class="btn">Add to Cart</button>
+                </div>
+                <div class="related-item">
+                    <img src="https://via.placeholder.com/150x150/6c757d/ffffff?text=Microphone" alt="USB Microphone">
+                    <h4>USB Condenser Microphone</h4>
+                    <p>$79.99</p>
+                    <button class="btn">Add to Cart</button>
+                </div>
+                <div class="related-item">
+                    <img src="https://via.placeholder.com/150x150/6c757d/ffffff?text=Stand" alt="Headphone Stand">
+                    <h4>Premium Headphone Stand</h4>
+                    <p>$39.99</p>
+                    <button class="btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 TechStore. All rights reserved.</p>
+        <p>
+            <a href="#privacy" style="color: white;">Privacy Policy</a> | 
+            <a href="#terms" style="color: white;">Terms of Service</a> | 
+            <a href="#contact" style="color: white;">Contact Us</a>
+        </p>
+    </footer>
+</body>
+</html>

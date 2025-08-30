@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialFeed - Connect with Friends</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #f0f2f5; }
+        .header { background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #1877f2; }
+        .search-bar { flex: 1; max-width: 400px; margin: 0 2rem; }
+        .search-bar input { width: 100%; padding: 0.75rem; border: none; border-radius: 20px; background: #f0f2f5; }
+        .nav-icons { display: flex; gap: 1rem; }
+        .nav-icon { width: 40px; height: 40px; border-radius: 50%; background: #f0f2f5; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .nav-icon:hover { background: #e4e6eb; }
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 1rem; display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 2rem; }
+        .sidebar { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: fit-content; }
+        .sidebar h3 { margin-top: 0; color: #65676b; font-size: 0.9rem; text-transform: uppercase; }
+        .sidebar-item { display: flex; align-items: center; padding: 0.75rem; border-radius: 8px; cursor: pointer; margin-bottom: 0.5rem; }
+        .sidebar-item:hover { background: #f0f2f5; }
+        .sidebar-item img { width: 32px; height: 32px; border-radius: 50%; margin-right: 0.75rem; }
+        .feed { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .create-post { padding: 1rem; border-bottom: 1px solid #e4e6eb; }
+        .post-input { width: 100%; padding: 1rem; border: none; border-radius: 8px; background: #f0f2f5; resize: none; margin-bottom: 1rem; }
+        .post-actions { display: flex; gap: 1rem; }
+        .post-btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .post-btn.primary { background: #1877f2; color: white; }
+        .post-btn.secondary { background: #e4e6eb; color: #65676b; }
+        .post { padding: 1rem; border-bottom: 1px solid #e4e6eb; }
+        .post-header { display: flex; align-items: center; margin-bottom: 1rem; }
+        .post-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 0.75rem; }
+        .post-info h4 { margin: 0; font-size: 0.9rem; }
+        .post-info p { margin: 0; color: #65676b; font-size: 0.8rem; }
+        .post-content { margin-bottom: 1rem; line-height: 1.5; }
+        .post-image { width: 100%; border-radius: 8px; margin-bottom: 1rem; }
+        .post-actions-bar { display: flex; justify-content: space-between; padding-top: 1rem; border-top: 1px solid #e4e6eb; }
+        .action-btn { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border: none; background: none; cursor: pointer; border-radius: 6px; color: #65676b; }
+        .action-btn:hover { background: #f0f2f5; }
+        .likes-count { color: #65676b; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .comments-section { margin-top: 1rem; }
+        .comment { display: flex; margin-bottom: 0.75rem; }
+        .comment-avatar { width: 32px; height: 32px; border-radius: 50%; margin-right: 0.5rem; }
+        .comment-content { background: #f0f2f5; padding: 0.75rem; border-radius: 18px; flex: 1; }
+        .comment-author { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .comment-text { margin: 0; font-size: 0.9rem; }
+        .comment-actions { margin-top: 0.5rem; font-size: 0.8rem; color: #65676b; }
+        .comment-actions span { margin-right: 1rem; cursor: pointer; }
+        .comment-actions span:hover { text-decoration: underline; }
+        .right-sidebar { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: fit-content; }
+        .contact-item { display: flex; align-items: center; padding: 0.5rem; border-radius: 8px; cursor: pointer; margin-bottom: 0.5rem; }
+        .contact-item:hover { background: #f0f2f5; }
+        .contact-avatar { width: 36px; height: 36px; border-radius: 50%; margin-right: 0.75rem; position: relative; }
+        .online-indicator { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #31a24c; border: 2px solid white; border-radius: 50%; }
+        .contact-info h4 { margin: 0; font-size: 0.9rem; }
+        .contact-info p { margin: 0; color: #65676b; font-size: 0.8rem; }
+        .stories { display: flex; gap: 0.5rem; margin-bottom: 1rem; overflow-x: auto; }
+        .story { min-width: 80px; text-align: center; cursor: pointer; }
+        .story-avatar { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #1877f2; padding: 2px; margin: 0 auto 0.5rem; }
+        .story-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .story-username { font-size: 0.8rem; color: #65676b; }
+        .trending { margin-top: 2rem; }
+        .trending-item { padding: 0.75rem; border-radius: 8px; cursor: pointer; margin-bottom: 0.5rem; }
+        .trending-item:hover { background: #f0f2f5; }
+        .trending-topic { font-weight: 600; margin-bottom: 0.25rem; }
+        .trending-count { font-size: 0.8rem; color: #65676b; }
+        .notification-badge { position: absolute; top: -5px; right: -5px; background: #e41e3f; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">SocialFeed</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search SocialFeed...">
+            </div>
+            <div class="nav-icons">
+                <div class="nav-icon" style="position: relative;">
+                    🏠
+                    <div class="notification-badge">3</div>
+                </div>
+                <div class="nav-icon" style="position: relative;">
+                    💬
+                    <div class="notification-badge">12</div>
+                </div>
+                <div class="nav-icon" style="position: relative;">
+                    🔔
+                    <div class="notification-badge">5</div>
+                </div>
+                <div class="nav-icon">👤</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <h3>Shortcuts</h3>
+            <div class="sidebar-item">
+                <img src="https://via.placeholder.com/32x32/1877f2/ffffff?text=👥" alt="Friends">
+                <span>Friends</span>
+            </div>
+            <div class="sidebar-item">
+                <img src="https://via.placeholder.com/32x32/42a5f5/ffffff?text=📺" alt="Watch">
+                <span>Watch</span>
+            </div>
+            <div class="sidebar-item">
+                <img src="https://via.placeholder.com/32x32/66bb6a/ffffff?text=🏪" alt="Marketplace">
+                <span>Marketplace</span>
+            </div>
+            <div class="sidebar-item">
+                <img src="https://via.placeholder.com/32x32/ff7043/ffffff?text=👥" alt="Groups">
+                <span>Groups</span>
+            </div>
+            <div class="sidebar-item">
+                <img src="https://via.placeholder.com/32x32/ab47bc/ffffff?text=🎮" alt="Gaming">
+                <span>Gaming</span>
+            </div>
+            <div class="sidebar-item">
+                <img src="https://via.placeholder.com/32x32/26a69a/ffffff?text=📚" alt="Learning">
+                <span>Learning</span>
+            </div>
+        </aside>
+
+        <main class="feed">
+            <div class="create-post">
+                <textarea class="post-input" placeholder="What's on your mind, John?" rows="3"></textarea>
+                <div class="post-actions">
+                    <button class="post-btn secondary">📷 Photo</button>
+                    <button class="post-btn secondary">🎥 Video</button>
+                    <button class="post-btn secondary">😊 Feeling</button>
+                    <button class="post-btn primary">Post</button>
+                </div>
+            </div>
+
+            <div class="stories">
+                <div class="story">
+                    <div class="story-avatar">
+                        <img src="https://via.placeholder.com/56x56/1877f2/ffffff?text=J" alt="John">
+                    </div>
+                    <div class="story-username">John</div>
+                </div>
+                <div class="story">
+                    <div class="story-avatar">
+                        <img src="https://via.placeholder.com/56x56/42a5f5/ffffff?text=S" alt="Sarah">
+                    </div>
+                    <div class="story-username">Sarah</div>
+                </div>
+                <div class="story">
+                    <div class="story-avatar">
+                        <img src="https://via.placeholder.com/56x56/66bb6a/ffffff?text=M" alt="Mike">
+                    </div>
+                    <div class="story-username">Mike</div>
+                </div>
+                <div class="story">
+                    <div class="story-avatar">
+                        <img src="https://via.placeholder.com/56x56/ff7043/ffffff?text=L" alt="Lisa">
+                    </div>
+                    <div class="story-username">Lisa</div>
+                </div>
+                <div class="story">
+                    <div class="story-avatar">
+                        <img src="https://via.placeholder.com/56x56/ab47bc/ffffff?text=A" alt="Alex">
+                    </div>
+                    <div class="story-username">Alex</div>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/40x40/1877f2/ffffff?text=S" alt="Sarah" class="post-avatar">
+                    <div class="post-info">
+                        <h4>Sarah Smith</h4>
+                        <p>2 hours ago • 🌍</p>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Just finished an amazing hike in the mountains! The views were absolutely breathtaking. Nature never fails to amaze me. 🏔️ #Hiking #Nature #Adventure</p>
+                    <img src="https://via.placeholder.com/600x400/4caf50/ffffff?text=Mountain+View" alt="Mountain view" class="post-image">
+                </div>
+                <div class="likes-count">👍 24 people like this</div>
+                <div class="post-actions-bar">
+                    <button class="action-btn">👍 Like</button>
+                    <button class="action-btn">💬 Comment</button>
+                    <button class="action-btn">🔄 Share</button>
+                    <button class="action-btn">📤 Send</button>
+                </div>
+                <div class="comments-section">
+                    <div class="comment">
+                        <img src="https://via.placeholder.com/32x32/42a5f5/ffffff?text=M" alt="Mike" class="comment-avatar">
+                        <div class="comment-content">
+                            <div class="comment-author">Mike Wilson</div>
+                            <div class="comment-text">Looks amazing! Where is this?</div>
+                            <div class="comment-actions">
+                                <span>Like</span>
+                                <span>Reply</span>
+                                <span>2h</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment">
+                        <img src="https://via.placeholder.com/32x32/66bb6a/ffffff?text=L" alt="Lisa" class="comment-avatar">
+                        <div class="comment-content">
+                            <div class="comment-author">Lisa Chen</div>
+                            <div class="comment-text">I'm so jealous! We should plan a hiking trip together sometime! 🥾</div>
+                            <div class="comment-actions">
+                                <span>Like</span>
+                                <span>Reply</span>
+                                <span>1h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/40x40/42a5f5/ffffff?text=M" alt="Mike" class="post-avatar">
+                    <div class="post-info">
+                        <h4>Mike Wilson</h4>
+                        <p>4 hours ago • 🏢</p>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Big news! 🎉 Just launched our new startup and we're already getting amazing feedback from our beta users. The journey has been incredible so far, and I'm excited to see where we go from here! #Startup #Innovation #Tech</p>
+                </div>
+                <div class="likes-count">👍 47 people like this</div>
+                <div class="post-actions-bar">
+                    <button class="action-btn">👍 Like</button>
+                    <button class="action-btn">💬 Comment</button>
+                    <button class="action-btn">🔄 Share</button>
+                    <button class="action-btn">📤 Send</button>
+                </div>
+                <div class="comments-section">
+                    <div class="comment">
+                        <img src="https://via.placeholder.com/32x32/1877f2/ffffff?text=J" alt="John" class="comment-avatar">
+                        <div class="comment-content">
+                            <div class="comment-author">John Doe</div>
+                            <div class="comment-text">Congratulations, Mike! What's your startup about?</div>
+                            <div class="comment-actions">
+                                <span>Like</span>
+                                <span>Reply</span>
+                                <span>3h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/40x40/66bb6a/ffffff?text=L" alt="Lisa" class="post-avatar">
+                    <div class="post-info">
+                        <h4>Lisa Chen</h4>
+                        <p>6 hours ago • 🎨</p>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Finally finished my latest painting! This one took me weeks to complete. Art is such a beautiful way to express emotions and tell stories. What do you think? 🎨 #Art #Painting #Creative</p>
+                    <img src="https://via.placeholder.com/600x400/ff9800/ffffff?text=Abstract+Painting" alt="Abstract painting" class="post-image">
+                </div>
+                <div class="likes-count">👍 89 people like this</div>
+                <div class="post-actions-bar">
+                    <button class="action-btn">👍 Like</button>
+                    <button class="action-btn">💬 Comment</button>
+                    <button class="action-btn">🔄 Share</button>
+                    <button class="action-btn">📤 Send</button>
+                </div>
+                <div class="comments-section">
+                    <div class="comment">
+                        <img src="https://via.placeholder.com/32x32/1877f2/ffffff?text=J" alt="John" class="comment-avatar">
+                        <div class="comment-content">
+                            <div class="comment-author">John Doe</div>
+                            <div class="comment-text">This is absolutely stunning! The colors are so vibrant and the composition is perfect. You're incredibly talented! 👏</div>
+                            <div class="comment-actions">
+                                <span>Like</span>
+                                <span>Reply</span>
+                                <span>5h</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment">
+                        <img src="https://via.placeholder.com/32x32/42a5f5/ffffff?text=S" alt="Sarah" class="comment-avatar">
+                        <div class="comment-content">
+                            <div class="comment-author">Sarah Smith</div>
+                            <div class="comment-text">I love how you use light and shadow! Do you take commissions? I'd love to have something like this in my home! 🏠</div>
+                            <div class="comment-actions">
+                                <span>Like</span>
+                                <span>Reply</span>
+                                <span>4h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="right-sidebar">
+            <h3>Contacts</h3>
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://via.placeholder.com/36x36/1877f2/ffffff?text=J" alt="John">
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="contact-info">
+                    <h4>John Doe</h4>
+                    <p>Online now</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://via.placeholder.com/36x36/42a5f5/ffffff?text=S" alt="Sarah">
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="contact-info">
+                    <h4>Sarah Smith</h4>
+                    <p>Online now</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://via.placeholder.com/36x36/66bb6a/ffffff?text=M" alt="Mike">
+                </div>
+                <div class="contact-info">
+                    <h4>Mike Wilson</h4>
+                    <p>2 hours ago</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://via.placeholder.com/36x36/ff7043/ffffff?text=L" alt="Lisa">
+                </div>
+                <div class="contact-info">
+                    <h4>Lisa Chen</h4>
+                    <p>4 hours ago</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://via.placeholder.com/36x36/ab47bc/ffffff?text=A" alt="Alex">
+                </div>
+                <div class="contact-info">
+                    <h4>Alex Johnson</h4>
+                    <p>1 day ago</p>
+                </div>
+            </div>
+
+            <div class="trending">
+                <h3>Trending</h3>
+                <div class="trending-item">
+                    <div class="trending-topic">#TechNews</div>
+                    <div class="trending-count">2.5K posts</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-topic">#StartupLife</div>
+                    <div class="trending-count">1.8K posts</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-topic">#ArtCommunity</div>
+                    <div class="trending-count">3.2K posts</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-topic">#NaturePhotography</div>
+                    <div class="trending-count">1.1K posts</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-topic">#Innovation</div>
+                    <div class="trending-count">4.7K posts</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Simple interaction functionality
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.textContent.includes('Like')) {
+                    this.style.color = '#1877f2';
+                    this.textContent = '👍 Liked';
+                }
+            });
+        });
+
+        // Story click functionality
+        document.querySelectorAll('.story').forEach(story => {
+            story.addEventListener('click', function() {
+                alert('Story feature would open here!');
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-bar input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                alert('Searching for: ' + this.value);
+            }
+        });
+
+        // Post creation
+        document.querySelector('.post-btn.primary').addEventListener('click', function() {
+            const postInput = document.querySelector('.post-input');
+            if (postInput.value.trim()) {
+                alert('Post created successfully!');
+                postInput.value = '';
+            } else {
+                alert('Please write something to post!');
+            }
+        });
+    </script>
+</body>
+</html>

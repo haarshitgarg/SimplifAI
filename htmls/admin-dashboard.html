@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SimplifAI Platform</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+        .sidebar { width: 250px; background: #2c3e50; color: white; height: 100vh; position: fixed; left: 0; top: 0; overflow-y: auto; }
+        .sidebar-header { padding: 1rem; border-bottom: 1px solid #34495e; }
+        .sidebar-nav { padding: 1rem 0; }
+        .nav-item { padding: 0.75rem 1rem; display: block; color: white; text-decoration: none; border-left: 3px solid transparent; }
+        .nav-item:hover, .nav-item.active { background: #34495e; border-left-color: #3498db; }
+        .nav-item i { margin-right: 0.5rem; }
+        .main-content { margin-left: 250px; padding: 1rem; }
+        .header { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #2c3e50; }
+        .stat-label { color: #7f8c8d; margin-top: 0.5rem; }
+        .chart-container { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        .data-table { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }
+        .table-header { background: #f8f9fa; padding: 1rem; border-bottom: 1px solid #dee2e6; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #dee2e6; }
+        th { background: #f8f9fa; font-weight: 600; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; margin: 0.25rem; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 5% auto; padding: 2rem; border-radius: 8px; width: 80%; max-width: 600px; }
+        .close { float: right; font-size: 1.5rem; cursor: pointer; }
+        .tabs { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 1rem; }
+        .tab { padding: 0.75rem 1.5rem; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab.active { border-bottom-color: #3498db; color: #3498db; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>SimplifAI</h2>
+            <p>Admin Panel</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active">
+                <i>📊</i> Dashboard
+            </a>
+            <a href="#users" class="nav-item">
+                <i>👥</i> Users
+            </a>
+            <a href="#analytics" class="nav-item">
+                <i>📈</i> Analytics
+            </a>
+            <a href="#settings" class="nav-item">
+                <i>⚙️</i> Settings
+            </a>
+            <a href="#reports" class="nav-item">
+                <i>📋</i> Reports
+            </a>
+            <a href="#integrations" class="nav-item">
+                <i>🔗</i> Integrations
+            </a>
+            <a href="#support" class="nav-item">
+                <i>💬</i> Support
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Dashboard Overview</h1>
+            <p>Welcome back, Administrator. Here's what's happening with your platform today.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">12,847</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2,341</div>
+                <div class="stat-label">Active Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">89.2%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">$45,231</div>
+                <div class="stat-label">Revenue (MTD)</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('overview')">Overview</div>
+            <div class="tab" onclick="showTab('users')">User Management</div>
+            <div class="tab" onclick="showTab('analytics')">Analytics</div>
+            <div class="tab" onclick="showTab('settings')">Settings</div>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="chart-container">
+                <h3>User Growth Trend</h3>
+                <div style="height: 300px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+                    <p style="color: #666;">📈 Chart visualization would go here</p>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <div class="table-header">
+                    <h3>Recent Activity</h3>
+                    <button class="btn btn-primary" onclick="openModal('activityModal')">View All</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Timestamp</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>john.doe@example.com</td>
+                            <td>Created new project</td>
+                            <td>2 minutes ago</td>
+                            <td><span style="color: #27ae60;">✓ Completed</span></td>
+                            <td>
+                                <button class="btn btn-primary">View</button>
+                                <button class="btn btn-warning">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>sarah.smith@company.com</td>
+                            <td>Updated profile</td>
+                            <td>15 minutes ago</td>
+                            <td><span style="color: #27ae60;">✓ Completed</span></td>
+                            <td>
+                                <button class="btn btn-primary">View</button>
+                                <button class="btn btn-warning">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>mike.wilson@startup.io</td>
+                            <td>Payment processed</td>
+                            <td>1 hour ago</td>
+                            <td><span style="color: #27ae60;">✓ Completed</span></td>
+                            <td>
+                                <button class="btn btn-primary">View</button>
+                                <button class="btn btn-success">Approve</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>lisa.chen@enterprise.com</td>
+                            <td>API key generated</td>
+                            <td>2 hours ago</td>
+                            <td><span style="color: #f39c12;">⚠ Pending</span></td>
+                            <td>
+                                <button class="btn btn-primary">View</button>
+                                <button class="btn btn-success">Approve</button>
+                                <button class="btn btn-danger">Reject</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="users" class="tab-content">
+            <div class="chart-container">
+                <h3>User Management</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <button class="btn btn-primary" onclick="openModal('addUserModal')">Add New User</button>
+                        <button class="btn btn-success">Export Users</button>
+                        <button class="btn btn-warning">Bulk Actions</button>
+                    </div>
+                    <div>
+                        <input type="text" placeholder="Search users..." style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; width: 250px;">
+                    </div>
+                </div>
+                
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox"></th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>John Doe</td>
+                                <td>john.doe@example.com</td>
+                                <td>Premium User</td>
+                                <td><span style="color: #27ae60;">Active</span></td>
+                                <td>2 minutes ago</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-warning">Suspend</button>
+                                    <button class="btn btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Sarah Smith</td>
+                                <td>sarah.smith@company.com</td>
+                                <td>Enterprise Admin</td>
+                                <td><span style="color: #27ae60;">Active</span></td>
+                                <td>15 minutes ago</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-warning">Suspend</button>
+                                    <button class="btn btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Mike Wilson</td>
+                                <td>mike.wilson@startup.io</td>
+                                <td>Free User</td>
+                                <td><span style="color: #e74c3c;">Suspended</span></td>
+                                <td>1 day ago</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-success">Activate</button>
+                                    <button class="btn btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="analytics" class="tab-content">
+            <div class="chart-container">
+                <h3>Platform Analytics</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h4>Traffic Sources</h4>
+                        <div style="height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+                            <p style="color: #666;">📊 Pie chart would go here</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Conversion Rates</h4>
+                        <div style="height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+                            <p style="color: #666;">📈 Bar chart would go here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <div class="table-header">
+                    <h3>Performance Metrics</h3>
+                    <button class="btn btn-primary">Download Report</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Current</th>
+                            <th>Previous</th>
+                            <th>Change</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Page Load Time</td>
+                            <td>1.2s</td>
+                            <td>1.8s</td>
+                            <td><span style="color: #27ae60;">+33%</span></td>
+                            <td>↗️ Improving</td>
+                        </tr>
+                        <tr>
+                            <td>API Response Time</td>
+                            <td>150ms</td>
+                            <td>120ms</td>
+                            <td><span style="color: #e74c3c;">-20%</span></td>
+                            <td>↘️ Declining</td>
+                        </tr>
+                        <tr>
+                            <td>Error Rate</td>
+                            <td>0.1%</td>
+                            <td>0.3%</td>
+                            <td><span style="color: #27ae60;">+67%</span></td>
+                            <td>↗️ Improving</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="chart-container">
+                <h3>Platform Settings</h3>
+                <form>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div>
+                            <h4>General Settings</h4>
+                            <div class="form-group">
+                                <label>Platform Name</label>
+                                <input type="text" value="SimplifAI" placeholder="Enter platform name">
+                            </div>
+                            <div class="form-group">
+                                <label>Default Language</label>
+                                <select>
+                                    <option>English</option>
+                                    <option>Spanish</option>
+                                    <option>French</option>
+                                    <option>German</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Timezone</label>
+                                <select>
+                                    <option>UTC</option>
+                                    <option>EST</option>
+                                    <option>PST</option>
+                                    <option>GMT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <h4>Security Settings</h4>
+                            <div class="form-group">
+                                <label>Two-Factor Authentication</label>
+                                <select>
+                                    <option>Required for all users</option>
+                                    <option>Required for admins only</option>
+                                    <option>Optional</option>
+                                    <option>Disabled</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Session Timeout (minutes)</label>
+                                <input type="number" value="30" min="5" max="480">
+                            </div>
+                            <div class="form-group">
+                                <label>Password Policy</label>
+                                <select>
+                                    <option>High Security</option>
+                                    <option>Medium Security</option>
+                                    <option>Low Security</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                        <button type="button" class="btn btn-warning">Reset to Defaults</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addUserModal')">&times;</span>
+            <h2>Add New User</h2>
+            <form>
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" placeholder="Enter first name" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" placeholder="Enter last name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter email address" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select required>
+                        <option value="">Select role</option>
+                        <option value="admin">Administrator</option>
+                        <option value="user">Regular User</option>
+                        <option value="premium">Premium User</option>
+                        <option value="enterprise">Enterprise User</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter password" required>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                    <button type="button" class="btn btn-warning" onclick="closeModal('addUserModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Activity Modal -->
+    <div id="activityModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('activityModal')">&times;</span>
+            <h2>All Activity</h2>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Timestamp</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>john.doe@example.com</td>
+                            <td>Created new project</td>
+                            <td>2 minutes ago</td>
+                            <td><span style="color: #27ae60;">✓ Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>sarah.smith@company.com</td>
+                            <td>Updated profile</td>
+                            <td>15 minutes ago</td>
+                            <td><span style="color: #27ae60;">✓ Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>mike.wilson@startup.io</td>
+                            <td>Payment processed</td>
+                            <td>1 hour ago</td>
+                            <td><span style="color: #27ae60;">✓ Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>lisa.chen@enterprise.com</td>
+                            <td>API key generated</td>
+                            <td>2 hours ago</td>
+                            <td><span style="color: #f39c12;">⚠ Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>alex.johnson@tech.com</td>
+                            <td>Downloaded report</td>
+                            <td>3 hours ago</td>
+                            <td><span style="color: #27ae60;">✓ Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>emma.davis@startup.io</td>
+                            <td>Updated billing info</td>
+                            <td>4 hours ago</td>
+                            <td><span style="color: #27ae60;">✓ Completed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
