@@ -24,7 +24,8 @@ func NewParseHandler(s services.WebParser) *ParseHandler {
 // Parse handler to parse http body to a more llm friendly format
 func (h *ParseHandler) Parse(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Calling Parse in ParseHandler.go")
-	// TODO: get the exact url from the body. So need to make sure the header is application/json
+
+	// Pre checks to validate the request
 	if r.Header.Get("Content-Type") != "application/json" {
 		w.WriteHeader(400)
 		w.Write([]byte("The request content type was bad"))
@@ -40,8 +41,9 @@ func (h *ParseHandler) Parse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Getting parsed html response give a url
+	// TODO: Need to handle the header for this request which might have authentication etc.
 	res, err := h.Service.Parse(req.URL)
-
 	if err != nil {
 		w.WriteHeader(200)
 		w.Write([]byte("Parse error"))
@@ -63,7 +65,6 @@ func (h *ParseHandler) TestParser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(parsedHTML)
 	w.WriteHeader(200)
 	w.Write([]byte(parsedHTML))
 }
