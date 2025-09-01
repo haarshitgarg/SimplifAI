@@ -34,6 +34,20 @@ func NewWebParser() WebParser {
 }
 
 /////////////////////////////////////////////
+///////////// Types for parser //////////////
+/////////////////////////////////////////////
+
+type assetType string
+
+const(
+	essential assetType = "essential"
+	actionable assetType = "actionable"
+	useless assetType = "useless"
+	textinfo assetType = "textinfo"
+	reparent assetType = "reparent"
+)
+
+/////////////////////////////////////////////
 ////// Exported functions for handlers //////
 /////////////////////////////////////////////
 
@@ -80,13 +94,14 @@ func (p *webParser) parseHTML(rawHtml string) (string, error) {
 		return "", err
 	}
 
-	p.traverseNode(node)
+	info := p.traverseNode(node)
+	info.Print(2)
 
 	// We should have new node with only actionable elements so need to change the node to string now
 	var buf strings.Builder
 	html.Render(&buf, node)
 
-	err = os.WriteFile("logs/parsedHTML.html", []byte(buf.String()), 777)
+	err = os.WriteFile("logs/parsedHTML.html", []byte(buf.String()), 0o666)
 	if err != nil {
 		fmt.Printf("Unable to write the html data to file. Error: %s\n", err)
 	}
@@ -95,64 +110,78 @@ func (p *webParser) parseHTML(rawHtml string) (string, error) {
 }
 
 // Traverse html node and restructe based on parsing logic
-func (p *webParser) traverseNode(node *html.Node) {
+func (p *webParser) traverseNode(node *html.Node) *LLMInfoNode {
 	if node == nil {
-		return
+		return nil
 	}
 
-	for c := node.FirstChild; c != nil; c = c.NextSibling {
-		if !p.isActionable(c) {
+	// TODO: Get all the info for a node to be given back to llm as input
+	desc := fmt.Sprintf("Node type: %d, data: %s", node.Type, node.Data)
+	info := NewLLMInfoNode(p.getSelectorID(node))
+	info.UpdateElementDesc(desc)
+
+	for c := node.FirstChild; c != nil; {
+		next := c.NextSibling
+
+		switch p.isUseful(c) {
+		case essential, actionable, textinfo:
+			// TODO Maybe edit the description of the current info node with this essential node
+			childInfo := p.traverseNode(c)
+			info.AppendChild(childInfo)
+		case useless:
+			node.RemoveChild(c)
+		case reparent:
 			p.reparentChildren(node, c)
-		} else {
-			p.traverseNode(c)
 		}
+
+		c = next
 	}
+
+	return info
 }
 
-// Tells if element is actionable or essential for the html
-func (p *webParser) isActionable(node *html.Node) bool {
+// Tells if element is is useful and returns the category, so you can ignore the complete node or keep it etc.
+func (p *webParser) isUseful(node *html.Node) assetType {
 	if node.Type != html.ElementNode {
-		return false // Only elements can be actionable
+		if node.Type != html.TextNode {
+			return useless // Only elements can be actionable
+		} else {
+			return textinfo
+		}
 	}
 
 	// Check if it's a naturally actionable tag
-	actionableTags := map[string]bool{
-		"button":   true,
-		"input":    true,
-		"select":   true,
-		"textarea": true,
-		"a":        true,
-		"form":     true,
+	actionableTags := map[string]assetType{
+		"button":   actionable,
+		"input":    actionable,
+		"select":   actionable,
+		"textarea": actionable,
+		"a":        actionable,
+		"form":     actionable,
+
+		"html":   essential,
+		"head":   essential,
+		"body":   essential,
+		"title":  essential,
+		"link":   essential,
+		"script": essential,
+
+		"meta":   useless,
+		"style":  useless,
 	}
 
-	if actionableTags[node.Data] {
-		return true
-	}
-
-	// Keep the essensial tags. TODO: review these tags
-	essentialTags := map[string]bool{
-		"html":   true,
-		"head":   true,
-		"body":   true,
-		"title":  true,
-		"meta":   false,
-		"link":   true,
-		"script": true,
-		"style":  false,
-	}
-
-	if essentialTags[node.Data] {
-		return true
+	if val, ok := actionableTags[node.Data]; ok {
+		return val 
 	}
 
 	// Check for JavaScript events or other interactive attributes
 	for _, attr := range node.Attr {
 		if strings.HasPrefix(attr.Key, "on") || attr.Key == "href" {
-			return true
+			return actionable
 		}
 	}
 
-	return false
+	return essential 
 }
 
 // reparentChildren reparents all of src's child nodes to dst.
@@ -165,5 +194,10 @@ func (p *webParser) reparentChildren(dst, src *html.Node) {
 		src.RemoveChild(child)
 		dst.AppendChild(child)
 	}
+}
+
+// Get seleactor id based on a node
+func (p *webParser) getSelectorID(node *html.Node) string {
+	return ""
 }
 
