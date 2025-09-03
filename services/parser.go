@@ -94,8 +94,8 @@ func (p *webParser) parseHTML(rawHtml string) (string, error) {
 		return "", err
 	}
 
-	info := p.traverseNode(node)
-	info.Print(2)
+	_ = p.traverseNode(node)
+	//info.Print(2)
 
 	// We should have new node with only actionable elements so need to change the node to string now
 	var buf strings.Builder
@@ -115,8 +115,12 @@ func (p *webParser) traverseNode(node *html.Node) *LLMInfoNode {
 		return nil
 	}
 
+	if node.Type == html.ElementNode && node.Data == "body" {
+		fmt.Println(GetDescription(node))
+	}
+
 	// TODO: Get all the info for a node to be given back to llm as input
-	desc := fmt.Sprintf("Node type: %d, data: %s", node.Type, node.Data)
+	desc := GetDescription(node)
 	info := NewLLMInfoNode(p.getSelectorID(node))
 	info.UpdateElementDesc(desc)
 
@@ -198,6 +202,7 @@ func (p *webParser) reparentChildren(dst, src *html.Node) {
 
 // Get seleactor id based on a node
 func (p *webParser) getSelectorID(node *html.Node) string {
+	// TODO: Add more info on how to get an accurate selector id
 	return ""
 }
 
