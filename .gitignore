@@ -46,6 +46,7 @@ temp/
 
 # Claude files
 CLAUDE.md
+.claude/*
 
 # Compiled executables
 SimplifAI
@@ -56,3 +57,4 @@ screenshots/
 # Logs and note files
 logs/**
 notes/**
+
